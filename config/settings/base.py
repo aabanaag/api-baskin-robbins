@@ -81,6 +81,7 @@ LOCAL_APPS = [
     "baskin_robbins.users.apps.UsersConfig",
     # Your stuff: custom apps go here
     "baskin_robbins.branch.apps.BranchConfig",
+    "baskin_robbins.inventory.apps.InventoryConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
