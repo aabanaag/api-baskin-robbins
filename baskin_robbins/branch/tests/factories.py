@@ -1,9 +1,7 @@
 from django.utils.text import slugify
-from factory import (
-    Faker,
-    LazyAttribute
-)
+from factory import Faker, LazyAttribute
 from factory.django import DjangoModelFactory
+
 from baskin_robbins.branch.models import Branch
 
 
@@ -13,3 +11,4 @@ class BranchFactory(DjangoModelFactory):
 
     class Meta:
         model = Branch
+        django_get_or_create = ("name",)

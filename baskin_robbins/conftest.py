@@ -1,7 +1,8 @@
 import pytest
-
-from rest_framework.test import APITestCase
+from allauth.account import app_settings as account_settings
+from django.test.utils import override_settings
 from django.urls import reverse
+from rest_framework.test import APITestCase
 
 from baskin_robbins.users.models import User
 from baskin_robbins.users.tests.factories import UserFactory
@@ -18,9 +19,14 @@ def user(db) -> User:
 
 
 class BaskinRobbinsTestCase(APITestCase):
-    def setupTestData(self):
-        self.user = UserFactory()
+    def setUp(self) -> None:
+        super().setUp()
 
+        self.staff = UserFactory.create(password="password")
+
+    @override_settings(
+        ACCOUNT_EMAIL_VERIFICATION=account_settings.EmailVerificationMethod.NONE  # noqa
+    )
     def _create_auth_header(self, username: str, password: str = "password") -> str:
         url = reverse("api:rest_login")
         data = {"username": username, "password": password}

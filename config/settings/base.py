@@ -1,6 +1,7 @@
 """
 Base settings to build other settings files upon.
 """
+from datetime import timedelta
 from pathlib import Path
 
 import environ
@@ -69,7 +70,6 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "rest_framework",
     "rest_framework.authtoken",
     "corsheaders",
     "drf_spectacular",
@@ -80,7 +80,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "baskin_robbins.users.apps.UsersConfig",
     # Your stuff: custom apps go here
-    "baskin_robbins.branch.apps.BranchConfig"
+    "baskin_robbins.branch.apps.BranchConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -282,9 +282,13 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "PAGE_SIZE": 100,
 }
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
@@ -304,3 +308,9 @@ SPECTACULAR_SETTINGS = {
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+
+SIMPLE_JWT = {"ACCESS_TOKEN_LIFETIME": timedelta(days=60)}
+REST_USE_JWT = True
+JWT_AUTH_COOKIE = "baskin-robbins-auth"
+JWT_AUTH_REFRESH_COOKIE = "baskin-robbins-refresh-token"
