@@ -1,5 +1,8 @@
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 from django.urls import reverse
+
+from baskin_robbins.branch.models import Branch
 
 
 class User(AbstractUser):
@@ -10,6 +13,7 @@ class User(AbstractUser):
     """
 
     name = None
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, null=True, blank=True)
 
     def get_absolute_url(self):
         """Get url for user's detail view.

@@ -4,6 +4,7 @@ from django.test.utils import override_settings
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
+from baskin_robbins.branch.tests.factories import BranchFactory
 from baskin_robbins.users.models import User
 from baskin_robbins.users.tests.factories import UserFactory
 
@@ -22,7 +23,8 @@ class BaskinRobbinsTestCase(APITestCase):
     def setUp(self) -> None:
         super().setUp()
 
-        self.staff = UserFactory.create(password="password")
+        self.main_branch = BranchFactory.create()
+        self.staff = UserFactory.create(password="password", branch=self.main_branch)
 
     @override_settings(
         ACCOUNT_EMAIL_VERIFICATION=account_settings.EmailVerificationMethod.NONE  # noqa

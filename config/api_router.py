@@ -23,4 +23,5 @@ urlpatterns = [
         name="account_confirm_email",
     ),
     path("", include("baskin_robbins.branch.urls")),
+    path("", include("baskin_robbins.inventory.urls")),
 ] + router.urls
