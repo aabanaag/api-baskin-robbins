@@ -22,4 +22,5 @@ urlpatterns = [
         ConfirmEmailView.as_view(),
         name="account_confirm_email",
     ),
+    path("", include("baskin_robbins.branch.urls"))
 ] + router.urls
