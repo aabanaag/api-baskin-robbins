@@ -73,10 +73,12 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "corsheaders",
     "drf_spectacular",
+    "dj_rest_auth.registration",
+    "django_filters",
 ]
 
 LOCAL_APPS = [
-    "baskin_robbins.users",
+    "baskin_robbins.users.apps.UsersConfig",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
