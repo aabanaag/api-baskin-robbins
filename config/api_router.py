@@ -24,4 +24,5 @@ urlpatterns = [
     ),
     path("", include("baskin_robbins.branch.urls")),
     path("", include("baskin_robbins.inventory.urls")),
+    path("", include("baskin_robbins.product.urls")),
 ] + router.urls
