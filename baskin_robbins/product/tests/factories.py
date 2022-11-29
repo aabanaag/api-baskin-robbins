@@ -1,9 +1,10 @@
 from django.utils.text import slugify
-from factory import Faker, LazyAttribute, SubFactory
+from factory import Faker, LazyAttribute, RelatedFactory, SubFactory
 from factory.django import DjangoModelFactory
 
 from baskin_robbins.branch.tests.factories import BranchFactory
-from baskin_robbins.product.models import Flavor, Product
+from baskin_robbins.inventory.tests.factories import IngredientFactory
+from baskin_robbins.product.models import Flavor, Product, Recipe, RecipeIngredient
 
 
 class FlavorFactory(DjangoModelFactory):
@@ -25,3 +26,23 @@ class ProductFactory(DjangoModelFactory):
 
     class Meta:
         model = Product
+
+
+class RecipeFactory(DjangoModelFactory):
+    product = SubFactory(ProductFactory)
+
+    class Meta:
+        model = Recipe
+
+
+class RecipeIngredientFactory(DjangoModelFactory):
+    recipe = SubFactory(RecipeFactory)
+    ingredient = SubFactory(IngredientFactory)
+    quantity = Faker("pydecimal", left_digits=2, right_digits=2, positive=True)
+
+    class Meta:
+        model = RecipeIngredient
+
+
+class RecipeWithIngredientFactory(RecipeFactory):
+    recipe_ingredient = RelatedFactory(RecipeIngredientFactory, "recipe")
