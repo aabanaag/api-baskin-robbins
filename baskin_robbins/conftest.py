@@ -5,6 +5,7 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 
 from baskin_robbins.branch.tests.factories import BranchFactory
+from baskin_robbins.product.tests.factories import FlavorFactory, ProductFactory
 from baskin_robbins.users.models import User
 from baskin_robbins.users.tests.factories import UserFactory
 
@@ -23,7 +24,12 @@ class BaskinRobbinsTestCase(APITestCase):
     def setUp(self) -> None:
         super().setUp()
 
+        self.chocolate = FlavorFactory.create(name="Chocolate")
+
         self.main_branch = BranchFactory.create()
+        self.ice_cream = ProductFactory.create(
+            flavor=self.chocolate, branch=self.main_branch
+        )
         self.staff = UserFactory.create(password="password", branch=self.main_branch)
 
     @override_settings(
