@@ -1,4 +1,9 @@
-from rest_framework.viewsets import ModelViewSet
+from rest_framework import status
+from rest_framework.decorators import action, permission_classes
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from baskin_robbins.product.api.serializers import (
     ProductCreateUpdateSerializer,
@@ -7,8 +12,11 @@ from baskin_robbins.product.api.serializers import (
     RecipeIngredientCreateUpdateSerializer,
     RecipeIngredientListRetrieveSerializer,
     RecipeListRetrieveSerializer,
+    TransactionListRetrieveSerializer,
 )
-from baskin_robbins.product.models import Product, Recipe, RecipeIngredient
+from baskin_robbins.product.models import Product, Recipe, RecipeIngredient, Transaction
+from baskin_robbins.product.services import process_purchase
+from baskin_robbins.utils.exceptions import ProductNoInventory
 
 
 class ProductViewSet(ModelViewSet):
@@ -19,6 +27,22 @@ class ProductViewSet(ModelViewSet):
         if self.action in ["list", "retrieve"]:
             return ProductListRetrieveSerializer
         return ProductCreateUpdateSerializer
+
+    @action(detail=True, methods=["post"])
+    @permission_classes([IsAuthenticated])
+    def buy(self):
+        try:
+            product = self.get_object()
+            quantity = self.request.data.get("quantity", 1)
+            is_success = process_purchase(product=product, quantity=quantity)
+            return Response(
+                "Enjoy!" if is_success else "Unable to process order",
+                status=status.HTTP_200_OK,
+            )
+        except ProductNoInventory:
+            return Response(
+                "Insufficient inventory", status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class RecipeViewSet(ModelViewSet):
@@ -43,3 +67,12 @@ class RecipeIngredientViewSet(ModelViewSet):
         if self.action in ["list", "retrieve"]:
             return RecipeIngredientListRetrieveSerializer
         return RecipeIngredientCreateUpdateSerializer
+
+
+class TransactionListRetrieveViewSet(
+    ListModelMixin, RetrieveModelMixin, GenericViewSet
+):
+    serializer_class = TransactionListRetrieveSerializer
+
+    def get_queryset(self):
+        return Transaction.objects.filter(product__branch=self.request.user.branch)

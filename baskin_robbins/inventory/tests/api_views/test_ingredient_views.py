@@ -81,4 +81,4 @@ class IngredientViewTestCase(BaskinRobbinsTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(ingredient["name"], self.milk.name)
         self.assertEqual(ingredient["description"], self.milk.description)
-        self.assertEqual(str(round(ingredient["quantity"], 3)), str(data["quantity"]))
+        self.assertEqual(str(ingredient["quantity"]), str(data["quantity"]))

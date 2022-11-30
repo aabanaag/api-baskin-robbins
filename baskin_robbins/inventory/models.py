@@ -4,6 +4,7 @@ from django.db import models
 from quantityfield.fields import QuantityField
 
 from baskin_robbins.branch.models import Branch
+from baskin_robbins.product.models import Product
 
 
 class Ingredient(models.Model):
@@ -18,11 +19,27 @@ class Ingredient(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.name
-
     def get_quantity(self) -> Decimal:
         return self.quantity.magnitude
 
+    def __str__(self):
+        return f"{self.name} - {self.quantity}"
+
+
+class Inventory(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        null=False,
+        blank=False,
+        related_name="inventory",
+    )
+    quantity = models.IntegerField(null=False, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.product.name} - {self.quantity}"
+
     class Meta:
-        ordering = ["name"]
+        verbose_name_plural = "Inventories"

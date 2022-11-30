@@ -2,7 +2,6 @@ from django.db import models
 from quantityfield.fields import QuantityField
 
 from baskin_robbins.branch.models import Branch
-from baskin_robbins.inventory.models import Ingredient
 
 
 class Flavor(models.Model):
@@ -31,8 +30,14 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # Check if the product is available in the inventory
+    def has_inventory(self) -> bool:
+        if self.inventory.exists():
+            return True
+        return False
+
     def __str__(self):
-        return self.sku
+        return f"{self.name} - {self.sku}"
 
 
 class Recipe(models.Model):
@@ -54,11 +59,21 @@ class RecipeIngredient(models.Model):
         Recipe, on_delete=models.CASCADE, null=False, blank=False
     )
     ingredient = models.ForeignKey(
-        Ingredient, on_delete=models.CASCADE, null=False, blank=False
+        "inventory.Ingredient", on_delete=models.CASCADE, null=False, blank=False
     )
     quantity = QuantityField(base_units="gram", null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f"{self.recipe.name} - {self.ingredient.name}"
+
+class Transaction(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        null=False,
+        blank=False,
+        related_name="transactions",
+    )
+    quantity = models.IntegerField(null=True, blank=True, default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

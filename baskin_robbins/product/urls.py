@@ -5,6 +5,7 @@ from baskin_robbins.product.api.views import (
     ProductViewSet,
     RecipeIngredientViewSet,
     RecipeViewSet,
+    TransactionListRetrieveViewSet,
 )
 
 if settings.DEBUG:
@@ -18,5 +19,6 @@ router.register("recipes", RecipeViewSet, basename="recipe")
 router.register(
     "recipe-ingredients", RecipeIngredientViewSet, basename="recipe-ingredient"
 )
+router.register("transactions", TransactionListRetrieveViewSet, basename="transaction")
 
 urlpatterns = router.urls

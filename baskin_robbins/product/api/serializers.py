@@ -1,8 +1,31 @@
 from rest_framework import serializers
 
 from baskin_robbins.branch.api.serializers import BranchSerializer
-from baskin_robbins.inventory.api.serializers import IngredientListRetrieveSerializer
-from baskin_robbins.product.models import Flavor, Product, Recipe, RecipeIngredient
+from baskin_robbins.inventory.models import Ingredient, Inventory
+from baskin_robbins.product.models import (
+    Flavor,
+    Product,
+    Recipe,
+    RecipeIngredient,
+    Transaction,
+)
+
+
+class ProductIngredientRetrieveSerializer(serializers.ModelSerializer):
+    branch = BranchSerializer(read_only=True)
+    quantity = serializers.DecimalField(
+        source="get_quantity", max_digits=10, decimal_places=3, allow_null=True
+    )
+
+    class Meta:
+        model = Ingredient
+        fields = "__all__"
+
+
+class ProductInventoryRetrieveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Inventory
+        fields = ("quantity",)
 
 
 class FlavorListRetrieveSerializer(serializers.ModelSerializer):
@@ -14,6 +37,7 @@ class FlavorListRetrieveSerializer(serializers.ModelSerializer):
 class ProductListRetrieveSerializer(serializers.ModelSerializer):
     flavor = FlavorListRetrieveSerializer(read_only=True)
     branch = BranchSerializer(read_only=True)
+    inventory = ProductInventoryRetrieveSerializer(read_only=True, many=True)
 
     class Meta:
         model = Product
@@ -66,9 +90,18 @@ class RecipeIngredientCreateUpdateSerializer(serializers.ModelSerializer):
 
 class RecipeIngredientListRetrieveSerializer(serializers.ModelSerializer):
     recipe = RecipeListRetrieveSerializer(read_only=True)
-    ingredient = IngredientListRetrieveSerializer(read_only=True)
+    ingredient = ProductIngredientRetrieveSerializer(read_only=True)
 
     class Meta:
         model = RecipeIngredient
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")
+
+
+class TransactionListRetrieveSerializer(serializers.ModelSerializer):
+    product = ProductListRetrieveSerializer(read_only=True)
+
+    class Meta:
+        model = Transaction
         fields = "__all__"
         read_only_fields = ("id", "created_at", "updated_at")
