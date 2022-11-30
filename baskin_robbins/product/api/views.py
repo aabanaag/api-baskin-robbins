@@ -14,6 +14,7 @@ from baskin_robbins.product.api.serializers import (
 )
 from baskin_robbins.product.models import Product, Recipe, RecipeIngredient
 from baskin_robbins.product.services import process_purchase
+from baskin_robbins.utils.exceptions import ProductNoInventory
 
 
 class ProductViewSet(ModelViewSet):
@@ -28,10 +29,18 @@ class ProductViewSet(ModelViewSet):
     @action(detail=True, methods=["post"])
     @permission_classes([IsAuthenticated])
     def buy(self):
-        product = self.get_object()
-        quantity = self.request.data.get("quantity", 1)
-        process_purchase(product=product, quantity=quantity)
-        return Response(status=status.HTTP_200_OK)
+        try:
+            product = self.get_object()
+            quantity = self.request.data.get("quantity", 1)
+            is_success = process_purchase(product=product, quantity=quantity)
+            return Response(
+                "Enjoy!" if is_success else "Unable to process order",
+                status=status.HTTP_200_OK,
+            )
+        except ProductNoInventory:
+            return Response(
+                "Insufficient inventory", status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class RecipeViewSet(ModelViewSet):
