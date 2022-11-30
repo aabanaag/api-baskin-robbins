@@ -37,7 +37,7 @@ class Product(models.Model):
         return False
 
     def __str__(self):
-        return f"{self.sku}"
+        return f"{self.name} - {self.sku}"
 
 
 class Recipe(models.Model):

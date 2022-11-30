@@ -22,6 +22,9 @@ class Ingredient(models.Model):
     def get_quantity(self) -> Decimal:
         return self.quantity.magnitude
 
+    def __str__(self):
+        return f"{self.name} - {self.quantity}"
+
 
 class Inventory(models.Model):
     product = models.ForeignKey(
@@ -37,3 +40,6 @@ class Inventory(models.Model):
 
     def __str__(self):
         return f"{self.product.name} - {self.quantity}"
+
+    class Meta:
+        verbose_name_plural = "Inventories"
