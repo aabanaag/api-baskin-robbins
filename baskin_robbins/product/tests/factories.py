@@ -4,7 +4,13 @@ from factory.django import DjangoModelFactory
 
 from baskin_robbins.branch.tests.factories import BranchFactory
 from baskin_robbins.inventory.tests.factories import IngredientFactory
-from baskin_robbins.product.models import Flavor, Product, Recipe, RecipeIngredient
+from baskin_robbins.product.models import (
+    Flavor,
+    Product,
+    Recipe,
+    RecipeIngredient,
+    Transaction,
+)
 
 
 class FlavorFactory(DjangoModelFactory):
@@ -46,3 +52,11 @@ class RecipeIngredientFactory(DjangoModelFactory):
 
 class RecipeWithIngredientFactory(RecipeFactory):
     recipe_ingredient = RelatedFactory(RecipeIngredientFactory, "recipe")
+
+
+class TransactionWithProductFactory(DjangoModelFactory):
+    product = SubFactory(ProductFactory)
+    quantity = Faker("pyint", min_value=1, max_value=10)
+
+    class Meta:
+        model = Transaction
