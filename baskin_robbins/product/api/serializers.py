@@ -2,7 +2,13 @@ from rest_framework import serializers
 
 from baskin_robbins.branch.api.serializers import BranchSerializer
 from baskin_robbins.inventory.models import Ingredient, Inventory
-from baskin_robbins.product.models import Flavor, Product, Recipe, RecipeIngredient
+from baskin_robbins.product.models import (
+    Flavor,
+    Product,
+    Recipe,
+    RecipeIngredient,
+    Transaction,
+)
 
 
 class ProductIngredientRetrieveSerializer(serializers.ModelSerializer):
@@ -88,5 +94,14 @@ class RecipeIngredientListRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RecipeIngredient
+        fields = "__all__"
+        read_only_fields = ("id", "created_at", "updated_at")
+
+
+class TransactionListRetrieveSerializer(serializers.ModelSerializer):
+    product = ProductListRetrieveSerializer(read_only=True)
+
+    class Meta:
+        model = Transaction
         fields = "__all__"
         read_only_fields = ("id", "created_at", "updated_at")

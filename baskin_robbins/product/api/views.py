@@ -1,8 +1,9 @@
 from rest_framework import status
 from rest_framework.decorators import action, permission_classes
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from baskin_robbins.product.api.serializers import (
     ProductCreateUpdateSerializer,
@@ -11,8 +12,9 @@ from baskin_robbins.product.api.serializers import (
     RecipeIngredientCreateUpdateSerializer,
     RecipeIngredientListRetrieveSerializer,
     RecipeListRetrieveSerializer,
+    TransactionListRetrieveSerializer,
 )
-from baskin_robbins.product.models import Product, Recipe, RecipeIngredient
+from baskin_robbins.product.models import Product, Recipe, RecipeIngredient, Transaction
 from baskin_robbins.product.services import process_purchase
 from baskin_robbins.utils.exceptions import ProductNoInventory
 
@@ -65,3 +67,12 @@ class RecipeIngredientViewSet(ModelViewSet):
         if self.action in ["list", "retrieve"]:
             return RecipeIngredientListRetrieveSerializer
         return RecipeIngredientCreateUpdateSerializer
+
+
+class TransactionListRetrieveViewSet(
+    ListModelMixin, RetrieveModelMixin, GenericViewSet
+):
+    serializer_class = TransactionListRetrieveSerializer
+
+    def get_queryset(self):
+        return Transaction.objects.filter(product__branch=self.request.user.branch)
